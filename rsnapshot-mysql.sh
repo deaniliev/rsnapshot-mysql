@@ -33,8 +33,8 @@
 
 # Path where a directory <databasename> will be created for each database (no trailing slash).
 # If you're using rsnapshot, this directory should be somewhere in the current working directory
-# BACKUP_DIR="."
-BACKUP_DIR="./mysqldumps"
+BACKUP_DIR="."
+# BACKUP_DIR="./mysqldumps"
 
 # Define which databases to exclude when fetching database names from mysql host
 # Normally you always want to exclude mysql, Database, information_schema and performance_schema
