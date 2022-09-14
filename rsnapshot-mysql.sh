@@ -370,7 +370,7 @@ for db in $databaselist; do
 				else
 					# IF engine is uknown to this script, check if the table is VIEW. 
 					# If it is VIEW - dump it with --no-data option or else - with no extra options
-					TABLE_TYPE=$(mysql -B --no-auto-rehash --skip-column-names -e "SELECT TABLE_TYPE FROM information_schema.tables WHERE table_schema='${db}' and table_name='${table}';")
+					TABLE_TYPE=$(mysql $MYSQL_HUP -B --no-auto-rehash --skip-column-names -e "SELECT TABLE_TYPE FROM information_schema.tables WHERE table_schema='${db}' and table_name='${table}';")
 					if [[ $TABLE_TYPE == "VIEW" ]]; then
 						ENGINE_OPT="--no-data"
 						printf ' NOTICE: VIEW found, dumping with --no-data option.'
