@@ -227,8 +227,8 @@ for db in $databaselist; do
 	fi
 
 	# get a list of db.table.engine
-	db_table_engine_list=`mysql $MYSQL_HUP --no-auto-rehash --skip-column-names -e "SELECT CONCAT(table_schema,'.',table_name,'.',engine) FROM information_schema.tables WHERE table_schema = '${db}'" | grep -Ev "$MYSQL_EXCLUDE_TABLES"`
-	db_table_list=`mysql $MYSQL_HUP --no-auto-rehash --skip-column-names -e "SELECT CONCAT(table_schema,'.',table_name) FROM information_schema.tables WHERE table_schema = '${db}'" | grep -Ev "$MYSQL_EXCLUDE_TABLES"`
+	db_table_engine_list=`mysql $MYSQL_HUP --no-auto-rehash --skip-column-names -e "SELECT CONCAT_WS('.', table_schema, table_name, engine) FROM information_schema.tables WHERE table_schema = '${db}'" | grep -Ev "$MYSQL_EXCLUDE_TABLES"`
+	db_table_list=`mysql $MYSQL_HUP --no-auto-rehash --skip-column-names -e "SELECT CONCAT_WS('.', table_schema, table_name) FROM information_schema.tables WHERE table_schema = '${db}'" | grep -Ev "$MYSQL_EXCLUDE_TABLES"`
 
 	# save the db table list
 	# if [ -z "$TEST_RUN" ]; then
@@ -368,7 +368,15 @@ for db in $databaselist; do
 				if [[ $engine == "MEMORY" ]] ;then
 					printf ' NOTICE: MEMORY table. '
 				else
-					printf ' NOTICE: Unexpected engine: NO ENGINE_OPT SET. '
+					# IF engine is uknown to this script, check if the table is VIEW. 
+					# If it is VIEW - dump it with --no-data option or else - with no extra options
+					TABLE_TYPE=$(mysql -B --no-auto-rehash --skip-column-names -e "SELECT TABLE_TYPE FROM information_schema.tables WHERE table_schema='${db}' and table_name='${table}';")
+					if [[ $TABLE_TYPE == "VIEW" ]]; then
+						ENGINE_OPT="--no-data"
+						printf ' NOTICE: VIEW found, dumping with --no-data option.'
+					else
+						printf ' NOTICE: Unexpected engine: NO ENGINE_OPT SET. '
+					fi
 				fi
 			fi
 		fi
