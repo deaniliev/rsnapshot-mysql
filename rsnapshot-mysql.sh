@@ -102,7 +102,7 @@ if [ ! -z "$CLIENT_CNF" ] ;then
 fi
 
 # common flags for mysqldump command
-MYSQL_DUMP_FLAGS="--compress --hex-blob --force --skip-dump-date"
+MYSQL_DUMP_FLAGS="--compress --hex-blob --force --skip-dump-date --skip-add-drop-table"
 
 if [[ $MYSQL_HOST == "localhost" ]] || [[ $MYSQL_HOST == "127.0.0.1" ]] ;then
 	# do not need to compress if host is localhost
