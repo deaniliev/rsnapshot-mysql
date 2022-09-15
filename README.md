@@ -11,3 +11,13 @@ Features:
   - Ready to work with "backup_script" feature of rsnapshot, an incremental snapshot utility for local and remote filesystems.
   - Creates a convenient restore script (BASH) for each database, under each dump directory.
   - Creates backup of GRANTs (mysql permissions), and info files with the list of tables and mysql version.
+
+
+Forked for the following reason:
+
+Author used CONCAT function to produce list of database.tables.engine. 
+From https://dev.mysql.com/doc/refman/5.7/en/string-functions.html#function_concat :
+
+  CONCAT() returns NULL if any argument is NULL. 
+
+Databases that I had to dump contained several VIEWs. The engine listed in a VIEW is NULL. Because of that the list contained several NULL values and did not dump correctly the table views. Modified it to use CONCAT_WS and if engine is empty to check if table is actually a VIEW. If it is - dump it with --no-data option.

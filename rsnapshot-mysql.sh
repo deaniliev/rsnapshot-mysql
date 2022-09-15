@@ -33,8 +33,8 @@
 
 # Path where a directory <databasename> will be created for each database (no trailing slash).
 # If you're using rsnapshot, this directory should be somewhere in the current working directory
-# BACKUP_DIR="."
-BACKUP_DIR="./mysqldumps"
+BACKUP_DIR="."
+# BACKUP_DIR="./mysqldumps"
 
 # Define which databases to exclude when fetching database names from mysql host
 # Normally you always want to exclude mysql, Database, information_schema and performance_schema
@@ -102,7 +102,7 @@ if [ ! -z "$CLIENT_CNF" ] ;then
 fi
 
 # common flags for mysqldump command
-MYSQL_DUMP_FLAGS="--compress --hex-blob --force --skip-dump-date"
+MYSQL_DUMP_FLAGS="--compress --hex-blob --force --skip-dump-date --skip-add-drop-table"
 
 if [[ $MYSQL_HOST == "localhost" ]] || [[ $MYSQL_HOST == "127.0.0.1" ]] ;then
 	# do not need to compress if host is localhost
@@ -370,7 +370,7 @@ for db in $databaselist; do
 				else
 					# IF engine is uknown to this script, check if the table is VIEW. 
 					# If it is VIEW - dump it with --no-data option or else - with no extra options
-					TABLE_TYPE=$(mysql -B --no-auto-rehash --skip-column-names -e "SELECT TABLE_TYPE FROM information_schema.tables WHERE table_schema='${db}' and table_name='${table}';")
+					TABLE_TYPE=$(mysql $MYSQL_HUP -B --no-auto-rehash --skip-column-names -e "SELECT TABLE_TYPE FROM information_schema.tables WHERE table_schema='${db}' and table_name='${table}';")
 					if [[ $TABLE_TYPE == "VIEW" ]]; then
 						ENGINE_OPT="--no-data"
 						printf ' NOTICE: VIEW found, dumping with --no-data option.'
